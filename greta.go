@@ -12,11 +12,11 @@ import (
 )
 
 var (
-	templateFile *string
-	inputFile    *string
-	outputFile   *string
-	mode         *string
-	showVersion  *bool
+	templateFile string
+	inputFile    string
+	outputFile   string
+	mode         string
+	showVersion  bool
 	version      string
 	commit       string
 	date         string
@@ -61,43 +61,57 @@ func getData(inputFile string) (interface{}, error) {
 }
 
 func Main() int {
-	templateFile = flag.StringP("template", "t", "", "template file (required)")
-	inputFile = flag.StringP("input", "i", "-", "input file or '-' for stdin")
-	outputFile = flag.StringP("output", "o", "", "output file (or leave blank for stdout)")
-	mode = flag.StringP("mode", "m", "html", "mode: text or html")
-	showVersion = flag.BoolP("version", "v", false, "show version")
 
-	flag.Parse()
+	if os.Getenv("GITHUB_ACTIONS") == "true" {
+		templateFile = os.Getenv("INPUT_TEMPLATE")
+		inputFile = os.Getenv("INPUT_INPUT")
+		if inputFile == "" {
+			inputFile = "-"
+		}
+		outputFile = os.Getenv("INPUT_OUTPUT")
+		mode = os.Getenv("INPUT_MODE")
+		if mode == "" {
+			mode = "html"
+		}
+	} else {
+		flag.StringVarP(&templateFile, "template", "t", "", "template file (required)")
+		flag.StringVarP(&inputFile, "input", "i", "-", "input file or '-' for stdin")
+		flag.StringVarP(&outputFile, "output", "o", "", "output file (or leave blank for stdout)")
+		flag.StringVarP(&mode, "mode", "m", "html", "mode: text or html")
+		flag.BoolVarP(&showVersion, "version", "v", false, "show version")
 
-	if *showVersion {
-		fmt.Fprintf(os.Stdout, "greta v%s (from %s on %s by %s)\n", version, commit, date, builtBy)
-		return 0
+		flag.Parse()
+
+		if showVersion {
+			fmt.Fprintf(os.Stdout, "greta v%s (from %s on %s by %s)\n", version, commit, date, builtBy)
+			return 0
+		}
 	}
 
-	if *templateFile == "" {
-		flag.PrintDefaults()
-		return 0
-	}
-
-	templateFn, templateErr := getTemplateRunner(*mode, *templateFile)
-	if templateErr != nil {
-		fmt.Fprintf(os.Stderr, "ERROR: unable to parse template '%s': %s", *templateFile, templateErr)
+	if templateFile == "" {
+		fmt.Fprintf(os.Stderr, "ERROR: template is required")
 		return 1
 	}
 
-	data, dataErr := getData(*inputFile)
+	templateFn, templateErr := getTemplateRunner(mode, templateFile)
+	if templateErr != nil {
+		fmt.Fprintf(os.Stderr, "ERROR: unable to parse template '%s': %s", templateFile, templateErr)
+		return 1
+	}
+
+	data, dataErr := getData(inputFile)
 	if dataErr != nil {
-		fmt.Fprintf(os.Stderr, "ERROR: unable to read input file '%s': %s", *inputFile, dataErr)
+		fmt.Fprintf(os.Stderr, "ERROR: unable to read input file '%s': %s", inputFile, dataErr)
 		return 2
 	}
 
 	var output io.Writer
-	if *outputFile == "" {
+	if outputFile == "" {
 		output = os.Stdout
 	} else {
-		f, createErr := os.Create(*outputFile)
+		f, createErr := os.Create(outputFile)
 		if createErr != nil {
-			fmt.Fprintf(os.Stderr, "ERROR: unable to create output file '%s': %s", *outputFile, createErr)
+			fmt.Fprintf(os.Stderr, "ERROR: unable to create output file '%s': %s", outputFile, createErr)
 			return 3
 		}
 		defer f.Close()
@@ -105,7 +119,7 @@ func Main() int {
 	}
 	runErr := templateFn(output, data)
 	if runErr != nil {
-		fmt.Fprintf(os.Stderr, "ERROR: unable to run template '%s': %s", *templateFile, runErr)
+		fmt.Fprintf(os.Stderr, "ERROR: unable to run template '%s': %s", templateFile, runErr)
 		return 4
 	}
 

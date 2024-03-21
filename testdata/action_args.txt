@@ -1,0 +1,67 @@
+env GITHUB_ACTIONS=true
+
+
+# all good
+env INPUT_INPUT=good_input.json
+env INPUT_TEMPLATE=good_template.tmpl
+exec greta
+
+# bad template
+env INPUT_INPUT=good_input.json
+env INPUT_TEMPLATE=bad_template.tmpl
+! exec greta
+
+# bad input
+env INPUT_INPUT=bad_input.json
+env INPUT_TEMPLATE=good_template.tmpl
+! exec greta
+
+# both bad
+env INPUT_INPUT=bad_input.json
+env INPUT_TEMPLATE=bad_template.tmpl
+! exec greta
+
+# template file does not exist
+env INPUT_INPUT=good_input.json
+env INPUT_TEMPLATE=bogus.tmpl
+! exec greta
+
+# data file does not exist
+env INPUT_INPUT=bogus.json
+env INPUT_TEMPLATE=good_template.tmpl
+! exec greta
+
+
+# text mode
+env INPUT_INPUT=good_input.json
+env INPUT_TEMPLATE=good_template.tmpl
+env INPUT_MODE=text
+exec greta
+
+# html mode
+env INPUT_MODE=html
+exec greta
+
+# bad mode
+env INPUT_MODE=other
+! exec greta
+
+# output file
+env INPUT_MODE=text
+env INPUT_OUTPUT=results.txt
+exec greta
+exists results.txt
+
+
+
+-- good_input.json --
+{ "data": "good" }
+
+-- bad_input.json --
+this is not { json }
+
+-- good_template.tmpl --
+Value is {{.}}
+
+-- bad_template.tmpl --
+Value is {{.

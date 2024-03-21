@@ -1,0 +1,25 @@
+name:         go-render-template-action
+description:  "Greta (Go REnder Template Action) renders golang templates"
+author:       fileformat
+
+branding:
+  icon:   file-plus
+  color:  green
+
+inputs:
+  template:
+    description:  Path to template file.
+    required:     true
+  input:
+    description:  Path to input file or `-` for stdin.  Defaults to stdin.
+    required:     false
+  output:
+    description:  Path to output file.  Output to stdout if not specified.
+    required:     false
+  mode:
+    description:  '`text` or `html` to select which golang template package to use. Defaults to `html`.'
+    required:     false
+
+runs:
+  using: docker
+  image: docker://ghcr.io/fileformat/greta:latest

@@ -1,0 +1,56 @@
+# json string
+exec greta --input string.json --template simple.template
+cmp stdout string_result.txt
+
+# json integer
+exec greta --input integer.json --template simple.template
+cmp stdout integer_result.txt
+
+# json array (simple)
+exec greta --input array.json --template simple.template
+cmp stdout simple_array_result.txt
+
+# json array (array-specific)
+exec greta --input array.json --template array.template
+cmp stdout array_result.txt
+
+# json array out-of-bounds
+! exec greta --input array.json --template array_oob.template
+
+
+-- simple.template --
+Value is "{{.}}"
+
+-- string.json --
+"testdata"
+
+-- string_result.txt --
+Value is "testdata"
+
+-- integer.json --
+123
+
+-- integer_result.txt --
+Value is "123"
+
+-- array.json --
+[ "abc", 123 ]
+
+-- simple_array_result.txt --
+Value is "[abc 123]"
+
+-- array.template --
+Array 0 = "{{index . 0}}"
+Array 1 = "{{index . 1}}"
+
+-- array_result.txt --
+Array 0 = "abc"
+Array 1 = "123"
+
+-- array_oob.template --
+Array 0 = "{{index . 0}}"
+Array 1 = "{{index . 1}}"
+Array 2 = "{{index . 2}}"
+
+-- last.txt --
+zzz

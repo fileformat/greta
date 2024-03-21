@@ -1,0 +1,55 @@
+# all good
+exec greta --input good_input.json --template good_template.template
+
+# all good, but via stdin
+stdin good_input.json
+exec greta --template good_template.template
+
+# bad template
+! exec greta --input good_input.json --template bad_template.template
+
+# bad input
+! exec greta --input bad_input.json --template good_template.template
+
+# both bad
+! exec greta --input bad_input.json --template bad_template.template
+
+# template file does not exist
+! exec greta --input good_input.json --template bogus.template
+
+# data file does not exist
+! exec greta --input bogus.json --template good_template.template
+
+# version
+exec greta --version
+stdout '^greta v'
+
+# text mode
+exec greta --input good_input.json --template good_template.template --mode text
+
+# html mode
+exec greta --input good_input.json --template good_template.template --mode html
+
+# bad mode
+! exec greta --input good_input.json --template good_template.template --mode other
+
+# output file
+exec greta --input good_input.json --template good_template.template -o results.txt
+exists results.txt
+
+# output file cannot be written
+! exec greta --input good_input.json --template good_template.template -o /tmp/bogus/bogus/bogus.txt
+
+
+
+-- good_input.json --
+{ "data": "good" }
+
+-- bad_input.json --
+this is not { json }
+
+-- good_template.template --
+Value is {{.}}
+
+-- bad_template.template --
+Value is {{.

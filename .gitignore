@@ -1,0 +1,14 @@
+*~
+/greta
+.cache
+cache/
+coverage.*
+.DS_Store
+*.env
+foo
+.idea/
+*.log
+*.swp
+*.tmp
+_tmp/
+tmp/

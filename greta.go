@@ -89,19 +89,19 @@ func Main() int {
 	}
 
 	if templateFile == "" {
-		fmt.Fprintf(os.Stderr, "ERROR: template is required")
+		fmt.Fprintf(os.Stderr, "ERROR: template is required\n")
 		return 1
 	}
 
 	templateFn, templateErr := getTemplateRunner(mode, templateFile)
 	if templateErr != nil {
-		fmt.Fprintf(os.Stderr, "ERROR: unable to parse template '%s': %s", templateFile, templateErr)
+		fmt.Fprintf(os.Stderr, "ERROR: unable to parse template '%s': %s\n", templateFile, templateErr)
 		return 1
 	}
 
 	data, dataErr := getData(inputFile)
 	if dataErr != nil {
-		fmt.Fprintf(os.Stderr, "ERROR: unable to read input file '%s': %s", inputFile, dataErr)
+		fmt.Fprintf(os.Stderr, "ERROR: unable to read input file '%s': %s\n", inputFile, dataErr)
 		return 2
 	}
 
@@ -111,7 +111,7 @@ func Main() int {
 	} else {
 		f, createErr := os.Create(outputFile)
 		if createErr != nil {
-			fmt.Fprintf(os.Stderr, "ERROR: unable to create output file '%s': %s", outputFile, createErr)
+			fmt.Fprintf(os.Stderr, "ERROR: unable to create output file '%s': %s\n", outputFile, createErr)
 			return 3
 		}
 		defer f.Close()
@@ -119,7 +119,7 @@ func Main() int {
 	}
 	runErr := templateFn(output, data)
 	if runErr != nil {
-		fmt.Fprintf(os.Stderr, "ERROR: unable to run template '%s': %s", templateFile, runErr)
+		fmt.Fprintf(os.Stderr, "ERROR: unable to run template '%s': %s\n", templateFile, runErr)
 		return 4
 	}
 

@@ -1,4 +1,7 @@
-# Greta <img alt="Greta Logo" src="docs/favicon.svg" height="96" align="right"/>
+# Greta [<img alt="Greta Logo" src="docs/favicon.svg" height="96" align="right"/>](https://greta.marcuse.info/)
+
+[![build](https://github.com/fileformat/greta/actions/workflows/build.yaml/badge.svg)](https://github.com/fileformat/greta/actions/workflows/build.yaml)
+[![example](https://github.com/fileformat/greta/actions/workflows/example.yaml/badge.svg)](https://github.com/fileformat/greta/actions/workflows/example.yaml)
 
 **G**o **RE**nder **T**emplate **A**ction: A Github Action that renders a Go template.
 

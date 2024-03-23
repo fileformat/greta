@@ -1,0 +1,30 @@
+name: example
+
+on:
+  push:
+    branches:
+    - main
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+
+      - name: Test Greta
+        uses: docker://ghcr.io/fileformat/greta:latest
+        with:
+          template: example/example-template.tmpl
+          output: example.out
+          input: example/example-input.json
+
+      - name: Show the results
+        run: |
+          cat example.out
